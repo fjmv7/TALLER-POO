@@ -1,90 +1,76 @@
+from biblioteca import Publicacion, Libro, Revista
 
-class Publicacion:
-    """Clase base que representa una publicación en la biblioteca"""
-    
-    def __init__(self, titulo: str, autor: str, año_publicacion: int):
-        """Constructor de la clase Publicacion"""
-        self._titulo = titulo
-        self._autor = autor
-        self._año = año_publicacion
-        self._disponible = True
-    
-    @property
-    def titulo(self) -> str:
-        """Getter para el título"""
-        return self._titulo
-    
-    @property
-    def disponible(self) -> bool:
-        """Getter para disponibilidad"""
-        return self._disponible
-    
-    def prestar(self) -> str:
-        """Método para prestar la publicación"""
-        if self._disponible:
-            self._disponible = False
-            return f"{self._titulo} ha sido prestado"
-        return f"{self._titulo} no está disponible"
-    
-    def devolver(self) -> str:
-        """Método para devolver la publicación"""
-        if not self._disponible:
-            self._disponible = True
-            return f"{self._titulo} ha sido devuelto"
-        return f"{self._titulo} ya estaba disponible"
-    
-    def __str__(self) -> str:
-        """Método mágico para representación como string"""
-        disp = "Disponible" if self._disponible else "Prestado"
-        return f"'{self._titulo}' por {self._autor} ({self._año}) - {disp}"
+def mostrar_menu():
+    """Muestra el menú de opciones"""
+    print("\n--- Sistema de Biblioteca ---")
+    print("1. Agregar nueva publicación")
+    print("2. Prestar publicación")
+    print("3. Devolver publicación")
+    print("4. Mostrar todas las publicaciones")
+    print("5. Salir")
 
+def agregar_publicacion(publicaciones: list):
+    """Agrega una nueva publicación al sistema"""
+    print("\nTipo de publicación:")
+    print("1. Libro")
+    print("2. Revista")
+    tipo = input("Seleccione (1-2): ")
+    
+    titulo = input("Título: ")
+    autor = input("Autor: ")
+    año = int(input("Año de publicación: "))
+    
+    if tipo == "1":
+        isbn = input("ISBN: ")
+        paginas = int(input("Número de páginas: "))
+        publicaciones.append(Libro(titulo, autor, año, paginas, isbn))  # CORREGIDO: orden de parámetros
+    else:
+        issn = input("ISSN: ")
+        numero = int(input("Número de revista: "))
+        publicaciones.append(Revista(titulo, autor, año, numero, issn))  # CORREGIDO: orden de parámetros
+    
+    print("¡Publicación agregada con éxito!")
 
-class Libro(Publicacion):
-    """Clase que representa un libro, hereda de Publicacion"""
+def main():
+    """Función principal del programa"""
+    publicaciones = []
     
-    def __init__(self, titulo: str, autor: str, año_publicacion: int, paginas: int, isbn: str):
-        """Constructor de la clase Libro"""
-        super().__init__(titulo, autor, año_publicacion)
-        self._isbn = isbn
-        self._paginas = paginas
+    # Ejemplos de publicaciones para pruebas - CORREGIDOS los parámetros
+    publicaciones.append(Libro("Cien años de soledad", "Gabriel García Márquez", 1967, 417, "978-0307474728"))
+    publicaciones.append(Revista("National Geographic", "Varios autores", 2023, 245, "ISSN-0027-9358"))
     
-    @property
-    def isbn(self) -> str:
-        """Getter para ISBN"""
-        return self._isbn
-    
-    def __str__(self) -> str:
-        """Método mágico para representación como string"""
-        base = super().__str__()
-        return f"{base}\nISBN: {self._isbn} - {self._paginas} páginas"
-
-
-class Revista(Publicacion):
-    """Clase que representa una revista, hereda de Publicacion"""
-    
-    def __init__(self, titulo: str, autor: str, año_publicacion: int, numero: int, issn: str):
-        """Constructor de la clase Revista"""
-        super().__init__(titulo, autor, año_publicacion)
-        self._issn = issn
-        self._numero = numero
-    
-    @property
-    def issn(self) -> str:
-        """Getter para ISSN"""
-        return self._issn
-    
-    def __str__(self) -> str:
-        """Método mágico para representación como string"""
-        base = super().__str__()
-        return f"{base}\nISSN: {self._issn} - Número: {self._numero}"
-
+    while True:
+        mostrar_menu()
+        opcion = input("Seleccione una opción: ")
+        
+        if opcion == "1":
+            agregar_publicacion(publicaciones)
+        elif opcion == "2":
+            titulo = input("Título a prestar: ")
+            for pub in publicaciones:
+                if pub.titulo.lower() == titulo.lower():
+                    print(pub.prestar())
+                    break
+            else:
+                print("Publicación no encontrada")
+        elif opcion == "3":
+            titulo = input("Título a devolver: ")
+            for pub in publicaciones:
+                if pub.titulo.lower() == titulo.lower():
+                    print(pub.devolver())
+                    break
+            else:
+                print("Publicación no encontrada")
+        elif opcion == "4":
+            print("\n--- Catálogo completo ---")
+            for pub in publicaciones:
+                print(pub)
+                print("-" * 40)
+        elif opcion == "5":
+            print("Saliendo del sistema...")
+            break
+        else:
+            print("Opción no válida")
 
 if __name__ == "__main__":
-    # Código de prueba si se ejecuta este archivo directamente
-    print("=== Prueba de las clases ===")
-    libro = Libro("El Principito", "Antoine de Saint-Exupéry", 1943, 96, "978-0156013928")
-    revista = Revista("Muy Interesante", "Varios autores", 2023, 423, "ISSN-0123-4567")
-    
-    print(libro)
-    print("\n" + "-" * 50 + "\n")
-    print(revista)
+    main()

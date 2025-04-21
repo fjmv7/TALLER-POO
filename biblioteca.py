@@ -1,79 +1,81 @@
-
-class Biblioteca:
-
-from main import Publicacion, Libro, Revista
-
-def mostrar_menu():
-    """Muestra el menú de opciones"""
-    print("\n--- Sistema de Biblioteca ---")
-    print("1. Agregar nueva publicación")
-    print("2. Prestar publicación")
-    print("3. Devolver publicación")
-    print("4. Mostrar todas las publicaciones")
-    print("5. Salir")
-
-def agregar_publicacion(publicaciones: list):
-    """Agrega una nueva publicación al sistema"""
-    print("\nTipo de publicación:")
-    print("1. Libro")
-    print("2. Revista")
-    tipo = input("Seleccione (1-2): ")
+class Publicacion:
+    """Clase base que representa una publicación en la biblioteca"""
     
-    titulo = input("Título: ")
-    autor = input("Autor: ")
-    año = int(input("Año de publicación: "))
+    def __init__(self, titulo: str, autor: str, año_publicacion: int):
+        """Constructor de la clase Publicacion"""
+        self._titulo = titulo
+        self._autor = autor
+        self._año = año_publicacion
+        self._disponible = True
     
-    if tipo == "1":
-        paginas = int(input("Número de páginas: "))
-        isbn = input("ISBN: ")
-        publicaciones.append(Libro(titulo, autor, año, paginas, isbn))
-    else:
-        numero = int(input("Número de revista: "))
-        issn = input("ISSN: ")
-        publicaciones.append(Revista(titulo, autor, año, numero, issn))
+    @property
+    def titulo(self) -> str:
+        """Getter para el título"""
+        return self._titulo
     
-    print("¡Publicación agregada con éxito!")
+    @property
+    def disponible(self) -> bool:
+        """Getter para disponibilidad"""
+        return self._disponible
+    
+    def prestar(self) -> str:
+        """Método para prestar la publicación"""
+        if self._disponible:
+            self._disponible = False
+            return f"{self._titulo} ha sido prestado"
+        return f"{self._titulo} no está disponible"
+    
+    def devolver(self) -> str:
 
-def main():
-    """Función principal del programa"""
-    publicaciones = []
+        if not self._disponible:
+            self._disponible = True
+            return f"{self._titulo} ha sido devuelto"
+        return f"{self._titulo} ya estaba disponible"
     
-    # Ejemplos iniciales
-    publicaciones.append(Libro("Cien años de soledad", "Gabriel García Márquez", 1967, 417, "978-0307474728"))
-    publicaciones.append(Revista("National Geographic", "Varios autores", 2023, 245, "ISSN-0027-9358"))
+    def __str__(self) -> str:
+
+        disp = "Disponible" if self._disponible else "Prestado"
+        return f"'{self._titulo}' por {self._autor} ({self._año}) - {disp}"
+
+
+class Libro(Publicacion):
+
     
-    while True:
-        mostrar_menu()
-        opcion = input("Seleccione una opción: ")
-        
-        if opcion == "1":
-            agregar_publicacion(publicaciones)
-        elif opcion == "2":
-            titulo = input("Título a prestar: ")
-            for pub in publicaciones:
-                if pub.titulo.lower() == titulo.lower():
-                    print(pub.prestar())
-                    break
-            else:
-                print("Publicación no encontrada")
-        elif opcion == "3":
-            titulo = input("Título a devolver: ")
-            for pub in publicaciones:
-                if pub.titulo.lower() == titulo.lower():
-                    print(pub.devolver())
-                    break
-            else:
-                print("Publicación no encontrada")
-        elif opcion == "4":
-            print("\n--- Catálogo completo ---")
-            for pub in publicaciones:
-                print(pub)
-                print("-" * 40)
-        elif opcion == "5":
-            print("Saliendo del sistema...")
-            break
-        else:
-            print("Opción no válida")
+    def __init__(self, titulo: str, autor: str, año_publicacion: int, paginas: int, isbn: str):
+
+        super().__init__(titulo, autor, año_publicacion)
+        self._isbn = isbn
+        self._paginas = paginas
+    
+    @property
+    def isbn(self) -> str:
+        """Getter para ISBN"""
+        return self._isbn
+    
+    def __str__(self) -> str:
+
+        base = super().__str__()
+        return f"{base}\nISBN: {self._isbn} - {self._paginas} páginas"
+
+
+class Revista(Publicacion):
+    def __init__(self, titulo: str, autor: str, año_publicacion: int, numero: int, issn: str):
+        super().__init__(titulo, autor, año_publicacion)
+        self._issn = issn
+        self._numero = numero
+    
+    @property
+    def issn(self) -> str:
+
+        return self._issn
+    
+    def __str__(self) -> str:
+        base = super().__str__()
+        return f"{base}\nISSN: {self._issn} - Número: {self._numero}"
+
 
 if __name__ == "__main__":
-    main()
+  
+    print(libro)
+    print("\n" + "-" * 50 + "\n")
+    print(revista)
